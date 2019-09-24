@@ -7,7 +7,7 @@ const moment = require('moment');
 
 router_user
 // 获取用户信息列表
-  .get('/user/getUserData', (req, res) => {
+  .get('/api/user/getUserData', (req, res) => {
     let sql = 'select * from user, userInfo where user.userId = userInfo.userId';
     conn.query(sql, (err, result) => {
       if (err || result.length == 0) {

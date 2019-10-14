@@ -44,3 +44,4 @@ app.use(require('express-session')({
 global.routerPath = __dirname;
 
 app.use(require('./router/router_userList'));
+app.use(require('./router/router_userMsg'));

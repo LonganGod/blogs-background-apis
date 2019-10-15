@@ -6,7 +6,9 @@ app.listen(9988, () => {
 
 app.engine('html', require('express-art-template'));
 
-app.use(require('body-parser').urlencoded({extended: false}));
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
 
 app.use(require('express-session')({
   secret: 'asdwqdaswxasx',
@@ -45,3 +47,4 @@ global.routerPath = __dirname;
 
 app.use(require('./router/router_userList'));
 app.use(require('./router/router_userMsg'));
+app.use(require('./router/router_backendNav'));

@@ -62,7 +62,6 @@ router_backendNav
   // 编辑导航
   .post('/api/backend/editBackendNav', (req, res) => {
     let sql = `update backendnav set ? where navId = ?`;
-    console.log(req.body)
     let data = {
       navName: req.body.navName,
       navIcon: req.body.navIcon,

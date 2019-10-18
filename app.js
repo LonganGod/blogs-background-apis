@@ -49,3 +49,4 @@ app.use(require('./router/router_userList'));
 app.use(require('./router/router_userMsg'));
 app.use(require('./router/router_backendNav'));
 app.use(require('./router/router_public'));
+app.use(require('./router/router_article'));

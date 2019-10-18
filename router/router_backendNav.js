@@ -47,7 +47,7 @@ router_backendNav
       navIcon: req.body.navIcon,
       navJumpPage: req.body.navUrl,
       navPId: parseInt(req.body.parentNavName),
-      navIndex: parseInt(req.body.navPosition),
+      navIndex: parseInt(req.body.parentNavName) + '-' + parseInt(req.body.navPosition),
       navStatus: req.body.navState ? 1 : 2,
       createTime: new Date()
     }

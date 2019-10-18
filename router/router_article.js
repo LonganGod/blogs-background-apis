@@ -10,7 +10,7 @@ router_article
   .get('/api/article/getFirCateList', (req, res) => {
     let sql = `select * from articlecate where catePId = 0 order by cateId desc`;
     conn.query(sql, (err, result) => {
-      if (err || result.length == 0) {
+      if (err) {
         console.log(err);
         return res.send({code: 201, message: '数据获取失败'});
       }
@@ -58,9 +58,9 @@ router_article
   })
   // 删除一级分类
   .get('/api/article/deleteFirCate', (req, res) => {
-    let sql = 'delete from articlecate where cateId = ?'
-    conn.query(sql, parseInt(req.query.id), (err, result) => {
-      if (err || result.affectedRows != 1) {
+    let sql = 'delete from articlecate where cateId = ? or catePId = ?'
+    conn.query(sql, [parseInt(req.query.id), parseInt(req.query.id)], (err, result) => {
+      if (err) {
         console.log(err)
         return res.send({code: 201, message: '操作失败'})
       }
@@ -92,12 +92,11 @@ router_article
   // 获取二级分类数据
   .get('/api/article/getSecCateList', (req, res) => {
     let sql = `select * from articlecate where catePId = ? order by cateId desc`;
-    conn.query(sql, (err, result) => {
-      if (err || result.length == 0) {
+    conn.query(sql, parseInt(req.query.catePId), (err, result) => {
+      if (err) {
         console.log(err);
         return res.send({code: 201, message: '数据获取失败'});
       }
-
 
       let newResult = []
       let startIndex = (Number(req.query.currentPage) - 1) * Number(req.query.pageList)
@@ -108,6 +107,46 @@ router_article
       }
 
       return res.send({code: 200, message: '数据获取成功', result: newResult, totalPage: result.length});
+    })
+  })
+  // 新增二级分类
+  .post('/api/article/addSecCate', (req, res) => {
+    let sql = 'insert into articlecate set ?'
+    let data = {
+      cateName: req.body.cateName,
+      catePId: req.body.catePId,
+      catestatus: 1,
+      createTime: new Date()
+    }
+
+    conn.query(sql, data, (err, result) => {
+      if (err || result.affectedRows != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '获取数据失败'})
+      }
+      return res.send({code: 200, message: '获取数据成功', result: result})
+    })
+  })
+  // 编辑二级分类
+  .get('/api/article/getSecCateData', (req, res) => {
+    let sql = 'select sec.*, fir.cateName as firCN from articlecate as fir, articlecate as sec where sec.cateId = ? and sec.catePId = fir.cateId'
+    conn.query(sql, parseInt(req.query.id), (err, result) => {
+      if (err || result.length != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '操作失败'})
+      }
+      return res.send({code: 200, message: '操作成功', result: result[0]})
+    })
+  })
+  // 删除二级分类
+  .get('/api/article/deleteSecCate', (req, res) => {
+    let sql = 'delete from articlecate where cateId = ?'
+    conn.query(sql, parseInt(req.query.id), (err, result) => {
+      if (err || result.affectedRows != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '操作失败'})
+      }
+      return res.send({code: 200, message: '操作成功'})
     })
   })
 

@@ -4,6 +4,17 @@ const router_public = express.Router();
 const path = require('path');
 const conn = require('../tools/db');
 const moment = require('moment');
+const multer = require('multer');
+
+let storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'D:/myTest/Vue-houtai/src/assets/uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+let upload = multer({storage: storage});
 
 router_public
 // 获取数据
@@ -30,6 +41,11 @@ router_public
         })
       }
     })
+  })
+  //商品图片上传
+  .post('/api/imgUploads', upload.single('articleImg'), (req, res) => {
+    console.log(req.file)
+    res.send({code: 200, message: "上传成功", filename: req.file.filename, path: req.file.path});
   })
 
 module.exports = router_public;

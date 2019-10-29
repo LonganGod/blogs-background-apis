@@ -149,5 +149,64 @@ router_article
       return res.send({code: 200, message: '操作成功'})
     })
   })
+  // 新增文章页面获取类别
+  .get('/api/article/articlePageGetCate', (req, res) => {
+    let sql1 = `select * from articlecate where catePId = 0 order by cateId desc`;
+
+    conn.query(sql1, (err1, result1) => {
+      if (err1) {
+        console.log(err1);
+        return res.send({code: 201, message: '数据获取失败'});
+      }
+
+      let sql2 = `select * from articlecate where catePId = ? order by cateId desc`;
+      for (let i = 0; i < result1.length; i++) {
+        result1[i].children = []
+        conn.query(sql2, result1[i].cateId, (err2, result2) => {
+          if (err2) {
+            console.log(err2);
+            return res.send({code: 201, message: '数据获取失败'});
+          }
+          result1[i].children = result2
+
+          if (i == result1.length - 1) {
+            return res.send({code: 200, message: '数据获取成功', result: result1});
+          }
+        })
+      }
+    })
+  })
+  // 新增文章页面获取标签
+  .get('/api/article/articlePageGetLabel', (req, res) => {
+    let sql1 = `select * from labels order by labelId desc`;
+
+    conn.query(sql1, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.send({code: 201, message: '数据获取失败'});
+      }
+      return res.send({code: 200, message: '数据获取成功', result: result});
+    })
+  })
+  // 新增保存文章
+  .post('/api/article/addArticle', (req, res) => {
+    let sql1 = `insert into article set ?`;
+    let data = {
+      articleTitle: req.body.articleTitle,
+      articleCate: req.body.articleCate,
+      articleLabel: req.body.articleLabel.join(','),
+      articleImg: req.body.articleImg.join(','),
+      articleContent: req.body.articleContent,
+      createTime: new Date()
+    }
+
+    conn.query(sql1, data, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.send({code: 201, message: '数据获取失败'});
+      }
+      return res.send({code: 200, message: '数据获取成功', result: result});
+    })
+  })
 
 module.exports = router_article;

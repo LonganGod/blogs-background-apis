@@ -44,7 +44,6 @@ router_public
   })
   //商品图片上传
   .post('/api/imgUploads', upload.single('articleImg'), (req, res) => {
-    console.log(req.file)
     res.send({code: 200, message: "上传成功", filename: req.file.filename, path: req.file.path});
   })
 

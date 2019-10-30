@@ -15,7 +15,6 @@ router_article
         return res.send({code: 201, message: '数据获取失败'});
       }
 
-
       let newResult = []
       let startIndex = (Number(req.query.currentPage) - 1) * Number(req.query.pageList)
       for (let i = startIndex; i < result.length; i++) {
@@ -197,6 +196,7 @@ router_article
       articleLabel: req.body.articleLabel.join(','),
       articleImg: req.body.articleImg.join(','),
       articleContent: req.body.articleContent,
+      status: req.body.status,
       createTime: new Date()
     }
 
@@ -206,6 +206,43 @@ router_article
         return res.send({code: 201, message: '数据获取失败'});
       }
       return res.send({code: 200, message: '数据获取成功', result: result});
+    })
+  })
+  // 获取文章
+  .get('/api/article/getArticleList', (req, res) => {
+    let sql = 'select a.*, ac.cateName from article a, articlecate ac where ac.cateId = a.articleCate order by a.articleId desc'
+    conn.query(sql, (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.send({code: 201, message: '数据获取失败'})
+      }
+
+      let newResult = []
+      let startIndex = (Number(req.query.currentPage) - 1) * Number(req.query.pageList)
+      for (let i = startIndex; i < result.length; i++) {
+        result[i].index = i + 1
+        if (newResult.length < Number(req.query.pageList) * Number(req.query.currentPage)) {
+          newResult.push(result[i])
+        }
+      }
+
+      for (let i = 0; i < newResult.length; i++) {
+        newResult[i].articleLabel = newResult[i].articleLabel.split(',')
+
+        let sql2 = 'select l.labelId, l.labelName from labels l where l.labelId = ?'
+        for (let j = 0; j < newResult[i].articleLabel.length; j++) {
+          conn.query(sql2, newResult[i].articleLabel[j], (err2, result2) => {
+            if (err2) {
+              return console.log(err2)
+            }
+            newResult[i].articleLabel[j] = result2[0]
+
+            if (i == newResult.length - 1 && j == newResult[i].articleLabel.length - 1) {
+              return res.send({code: 200, message: '数据获取成功', result: newResult, totalPage: result.length});
+            }
+          })
+        }
+      }
     })
   })
 

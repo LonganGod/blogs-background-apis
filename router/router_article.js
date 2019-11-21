@@ -177,7 +177,8 @@ router_article
   })
   // 新增文章页面获取标签
   .get('/api/article/articlePageGetLabel', (req, res) => {
-    let sql1 = `select * from labels order by labelId desc`;
+    var ids = req.query.labelIds != undefined ? req.query.labelIds : 0
+    let sql1 = `select * from labels where labelId not in (${ids}) order by labelId desc`;
 
     conn.query(sql1, (err, result) => {
       if (err) {
@@ -243,6 +244,71 @@ router_article
           })
         }
       }
+    })
+  })
+  // 编辑文章
+  .get('/api/article/getEditArticle', (req, res) => {
+    let sql = `select * from article where articleId = ?`
+    let sql1 = `select cateId, catePId from articlecate where cateId = ?`
+    let sql2 = `select labelId, labelName from labels where labelId = ?`
+    conn.query(sql, req.query.id, (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.send({code: 201, message: '数据获取失败'})
+      }
+      var imgsArr = result[0].articleImg.split(',')
+      result[0].articleImg = []
+      for (let i = 0; i < imgsArr.length; i++) {
+        var obj = {}
+        obj.name = 'img' + (i + 1)
+        obj.url = imgsArr[i]
+        result[0].articleImg.push(obj)
+      }
+
+      conn.query(sql1, result[0].articleCate, (err1, result1) => {
+        if (err1) {
+          console.log(err1)
+          return res.send({code: 201, message: '数据获取失败'})
+        }
+        result[0].articleCate = [result1[0].catePId, result1[0].cateId]
+
+        var labelArr = result[0].articleLabel.split(',')
+        result[0].labelsList = []
+
+        for (let i = 0; i < labelArr.length; i++) {
+          conn.query(sql2, labelArr[i], (err2, result2) => {
+            if (err2) {
+              console.log(err2)
+              return res.send({code: 201, message: '数据获取失败'})
+            }
+            result[0].labelsList.push(result2[0])
+            if (i == labelArr.length - 1) {
+              return res.send({code: 200, message: '数据获取成功', result: result[0]})
+            }
+          })
+        }
+      })
+    })
+  })
+  // 编辑保存文章
+  .post('/api/article/editArticle', (req, res) => {
+    let sql1 = `update article set ? where articleId = ?`;
+    let data = {
+      articleTitle: req.body.articleTitle,
+      articleCate: req.body.articleCate,
+      articleLabel: req.body.articleLabel.join(','),
+      articleImg: req.body.articleImg.join(','),
+      articleContent: req.body.articleContent,
+      status: req.body.status,
+      createTime: new Date()
+    }
+
+    conn.query(sql1, [data, req.body.articleId], (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.send({code: 201, message: '数据获取失败'});
+      }
+      return res.send({code: 200, message: '编辑成功', result: result});
     })
   })
 

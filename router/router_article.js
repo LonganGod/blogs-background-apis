@@ -311,5 +311,27 @@ router_article
       return res.send({code: 200, message: '编辑成功', result: result});
     })
   })
+  // 删除文章
+  .get('/api/article/deleteArticle', (req, res) => {
+    let sql = 'delete from article where articleId = ?'
+    conn.query(sql, parseInt(req.query.id), (err, result) => {
+      if (err || result.affectedRows != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '操作失败'})
+      }
+      return res.send({code: 200, message: '操作成功'})
+    })
+  })
+  // 发布文章
+  .get('/api/article/releaseArticle', (req, res) => {
+    let sql = 'update article set status = 1 where articleId = ?'
+    conn.query(sql, parseInt(req.query.id), (err, result) => {
+      if (err || result.affectedRows != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '操作失败'})
+      }
+      return res.send({code: 200, message: '操作成功'})
+    })
+  })
 
 module.exports = router_article;

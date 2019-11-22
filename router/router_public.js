@@ -34,6 +34,10 @@ router_public
             return res.send({code: 201, message: '数据获取失败'});
           }
 
+          for (let j = 0; j < result2.length; j++) {
+            result2[j].navIndex = result[i].navIndex + '-' + result2[j].navIndex
+          }
+
           result[i].children = result2
           if (i == result.length - 1) {
             return res.send({code: 200, message: '数据获取成功', result: result});

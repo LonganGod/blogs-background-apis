@@ -96,12 +96,34 @@ router_role
       rolePId: parseInt(req.body.rolePId),
       rolePermissions: req.body.permissionsIds
     }
-    conn.query(sql, [data, req.body.roleId, data, req.body.roleId], (err, result) => {
+    conn.query(sql, [data, req.body.roleId], (err, result) => {
       if (err) {
         console.log(err)
         return res.send({code: 201, message: '操作失败'});
       }
       return res.send({code: 200, message: '操作成功', result: result});
+    })
+  })
+  // 保存编辑，包括子角色
+  .post('/api/role/editRoleIncludeChildren', (req, res) => {
+    let sql = `update role set rolePermissions = ? where roleId = ?;update role set rolePermissions = ? where rolePId = ?;`
+    conn.query(sql, [req.body.permissionsIds, req.body.roleId, req.body.permissionsIds, req.body.roleId], (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.send({code: 201, message: '操作失败'});
+      }
+      return res.send({code: 200, message: '操作成功'});
+    })
+  })
+  // 删除角色
+  .get('/api/config/deleteRole', (req, res) => {
+    let sql = 'delete from role where roleId = ?;delete from role where rolePId = ?';
+    conn.query(sql, [parseInt(req.query.id), parseInt(req.query.id)], (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.send({code: 201, msg: '操作失败'})
+      }
+      return res.send({code: 200, msg: '操作成功'})
     })
   })
 

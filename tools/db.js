@@ -3,7 +3,8 @@ const conn = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
     password: '00000000',
-    database: 'wsbk'
+    database: 'wsbk',
+    multipleStatements: true
 });
 conn.connect();
 module.exports = conn;

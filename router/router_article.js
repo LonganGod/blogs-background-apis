@@ -221,7 +221,7 @@ router_article
       let newResult = []
       let startIndex = (Number(req.query.currentPage) - 1) * Number(req.query.pageList)
       for (let i = startIndex; i < result.length; i++) {
-        result[i].index = i + 1
+        result[i].index = i + 1 + (Number(req.query.pageList) * (Number(req.query.currentPage) - 1))
         if (newResult.length < Number(req.query.pageList) * Number(req.query.currentPage)) {
           newResult.push(result[i])
         }

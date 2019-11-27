@@ -8,7 +8,7 @@ const multer = require('multer');
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'D:/myTest/Vue-houtai/src/assets/uploads')
+    cb(null, path.join(routerPath, '../serverImage'))
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
@@ -46,9 +46,32 @@ router_public
       }
     })
   })
-  //商品图片上传
+  // 获取数据
+  .get('/api/public/getAdminData', (req, res) => {
+    let sql = `select * from adminInfo where adminId = ?`;
+    conn.query(sql, [req.query.id], (err, result) => {
+      if (err || result.length == 0) {
+        console.log(err);
+        return res.send({code: 201, message: '数据获取失败'});
+      }
+      return res.send({code: 200, message: '数据获取成功', result: result[0]});
+    })
+  })
+  // 商品图片上传
   .post('/api/imgUploads', upload.single('articleImg'), (req, res) => {
-    res.send({code: 200, message: "上传成功", filename: req.file.filename, path: req.file.path});
+    console.log(req.file)
+    res.send({code: 200, message: "上传成功", filename: req.file.filename, path: serverPath + req.file.filename});
+  })
+  // 登录
+  .post('/api/checkLogin', (req, res) => {
+    let sql = `select * from admin a, adminInfo ai where a.adminId = ai.adminId and a.adminUserName = ? and a.adminPassword = ?`
+    conn.query(sql, [req.body.userName, req.body.password], (err, result) => {
+      if (err || result.length != 1) {
+        console.log(err)
+        return res.send({code: 201, message: '登录失败'})
+      }
+      return res.send({code: 200, message: '登录成功', result: result[0]})
+    })
   })
 
 module.exports = router_public;

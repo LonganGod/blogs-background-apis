@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const path = require('path');
 app.listen(9988, () => {
   console.log('server is running at 9988');
 });
@@ -43,7 +44,10 @@ app.use(require('express-session')({
 // };
 // app.use(loginCheck);
 
+app.use('/serverImage', express.static(path.join(__dirname, '../serverImage')));
+
 global.routerPath = __dirname;
+global.serverPath = 'http://127.0.0.1:9988/serverImage/';
 
 app.use(require('./router/router_userList'));
 app.use(require('./router/router_userMsg'));

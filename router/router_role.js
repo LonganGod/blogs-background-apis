@@ -51,7 +51,7 @@ router_role
   })
   // 获取权限数据
   .get('/api/role/getPermissionsList', (req, res) => {
-    let sql = `select * from permissions`;
+    let sql = `select * from backendnav `;
     conn.query(sql, (err, result) => {
       if (err || result.length == 0) {
         console.log(err);

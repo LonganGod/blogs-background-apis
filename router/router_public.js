@@ -88,5 +88,37 @@ router_public
       return res.send({code: 200, message: '登录成功', result: result[0]})
     })
   })
+  // 权限验证
+  .post('/api/checkPermission', (req, res) => {
+    let sql = `select r.rolePermissions from adminInfo ai, role r where ai.adminRole = r.roleId and ai.adminId = ?`
+    let sql1 = `select navJumpPage from backendnav where navId = ?`
+    let hasPermission = false
+
+    conn.query(sql, [req.body.adminId], (err, result) => {
+      if (err) {
+        console.log(err)
+        return send({code: 201, message: '请求失败'})
+      }
+      let permissoionList = result[0].rolePermissions.split(',')
+      for (let i = 0; i < permissoionList.length; i++) {
+        conn.query(sql1, [parseInt(permissoionList[i])], (err1, result1) => {
+          if (err1) {
+            console.log(err1)
+            return send({code: 201, message: '请求失败'})
+          }
+          if (result1[0].navJumpPage.split(',').includes(req.body.path)) {
+            hasPermission = true
+          }
+          if (i == permissoionList.length - 1) {
+            if (hasPermission) {
+              return res.send({code: 200, message: '请求成功'})
+            } else {
+              return res.send({code: 201, message: '请求失败'})
+            }
+          }
+        })
+      }
+    })
+  })
 
 module.exports = router_public;

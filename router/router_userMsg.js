@@ -8,9 +8,9 @@ const moment = require('moment');
 router_userMsg
 // 获取父级用户留言
   .get('/api/userMsg/getLeaveMsgData', (req, res) => {
-    let sql = `select lm.*, ui1.nickName, ui2.nickName as respondTo1
-      from leaveMsg as lm, userInfo as ui1, userInfo as ui2
-      where lm.userId = ui1.userId and ui1.status = 1 and lm.respondTo = ui2.userId
+    let sql = `select lm.*, ui1.nickName, ui2.nickName respondTo1, a.articleTitle
+      from leaveMsg lm, userInfo ui1, userInfo ui2, article a
+      where lm.userId = ui1.userId and ui1.status = 1 and lm.respondTo = ui2.userId and a.articleId = lm.articleId
       order by lm.msgId desc`;
     conn.query(sql, (err, result) => {
       if (err || result.length == 0) {

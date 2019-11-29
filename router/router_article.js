@@ -198,6 +198,7 @@ router_article
       articleImg: req.body.articleImg.join(','),
       articleContent: req.body.articleContent,
       status: req.body.status,
+      adminId: req.body.adminId,
       createTime: new Date()
     }
 
@@ -211,8 +212,9 @@ router_article
   })
   // 获取文章
   .get('/api/article/getArticleList', (req, res) => {
-    let sql = 'select a.*, ac.cateName from article a, articlecate ac where ac.cateId = a.articleCate order by a.articleId desc'
-    conn.query(sql, (err, result) => {
+    let sql = 'select a.*, ac.cateName, ai.adminName from article a, articlecate ac, adminInfo ai' +
+      ' where ai.adminId = a.adminId and ac.cateId = a.articleCate and a.adminId = ? order by a.articleId desc'
+    conn.query(sql, [req.query.adminId], (err, result) => {
       if (err) {
         console.log(err)
         return res.send({code: 201, message: '数据获取失败'})

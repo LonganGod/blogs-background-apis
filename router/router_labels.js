@@ -9,21 +9,36 @@ router_labels
 // 获取标签列表数据
   .get('/api/labels/getLabelsList', (req, res) => {
     let sql = `select * from labels order by labelId desc`;
+    let sql1 = `select article.articleLabel from article`;
     conn.query(sql, (err, result) => {
       if (err || result.length == 0) {
         console.log(err);
         return res.send({code: 201, message: '数据获取失败'});
       }
-
       let newResult = []
       let startIndex = (Number(req.query.currentPage) - 1) * Number(req.query.pageList)
-      for (let i = startIndex; i < result.length; i++) {
-        if (newResult.length < Number(req.query.pageList) * Number(req.query.currentPage)) {
-          newResult.push(result[i])
-        }
-      }
 
-      return res.send({code: 200, message: '数据获取成功', result: newResult, totalPage: result.length});
+      conn.query(sql1, (err1, result1) => {
+        if (err1) {
+          console.log(err1);
+          return res.send({code: 201, message: '数据获取失败'});
+        }
+        for (let i = startIndex; i < result.length; i++) {
+          result[i].articles = 0
+          for (let j = 0; j < result1.length; j++) {
+            let labels = result1[j].articleLabel.split(',')
+            for (let k = 0; k < labels.length; k++) {
+              if (labels[k] == result[i].labelId) {
+                result[i].articles++
+              }
+            }
+          }
+          if (newResult.length < Number(req.query.pageList) * Number(req.query.currentPage)) {
+            newResult.push(result[i])
+          }
+        }
+        return res.send({code: 200, message: '数据获取成功', result: newResult, totalPage: result.length});
+      })
     })
   })
   // 新增标签

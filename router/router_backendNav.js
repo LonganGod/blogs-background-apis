@@ -237,6 +237,8 @@ router_backendNav
           navJumpPage: insertList[iIndex].navJumpPage,
           navPId: pId,
           type: 0,
+          navIndex: 1,
+          navStatus: 1,
           createTime: new Date()
         }
         conn.query(sql3, [data], (err3, result3) => {

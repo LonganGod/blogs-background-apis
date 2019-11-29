@@ -19,9 +19,8 @@ let upload = multer({storage: storage});
 router_public
 // 获取数据
   .get('/api/public/getBackendNavList', (req, res) => {
-    let sql = `select * from backendNav where navPId = 0 and navStatus = 1 and type = 1 order by navIndex`;
-    let sql2 = `select * from backendNav where navPId = ? and navStatus = 1 and type = 1 order by navIndex`;
-    let sql3 = `select * from backendNav where navPId = ? and type = 0`;
+    let sql = `select * from backendNav where navPId = 0 and navStatus = 1 order by navIndex`;
+    let sql2 = `select * from backendNav where navPId = ? and navStatus = 1 order by navIndex`;
 
     conn.query(sql, (err, result) => {
       if (err || result.length == 0) {
@@ -40,7 +39,7 @@ router_public
           for (let j = 0; j < result2.length; j++) {
             result2[j].children = []
             result2[j].navIndex = result[i].navIndex + '-' + result2[j].navIndex
-            conn.query(sql3, [result2[j].navId], (err3, result3) => {
+            conn.query(sql2, [result2[j].navId], (err3, result3) => {
               for (let k = 0; k < result3.length; k++) {
                 result3[k].children = []
               }

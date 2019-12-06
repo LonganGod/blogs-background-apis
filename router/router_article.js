@@ -196,6 +196,7 @@ router_article
       articleCate: req.body.articleCate,
       articleLabel: req.body.articleLabel.join(','),
       articleImg: req.body.articleImg.join(','),
+      articleAbstract: req.body.articleAbstract,
       articleContent: req.body.articleContent,
       status: req.body.status,
       adminId: req.body.adminId,
@@ -300,9 +301,9 @@ router_article
       articleCate: req.body.articleCate,
       articleLabel: req.body.articleLabel.join(','),
       articleImg: req.body.articleImg.join(','),
+      articleAbstract: req.body.articleAbstract,
       articleContent: req.body.articleContent,
-      status: req.body.status,
-      createTime: new Date()
+      status: req.body.status
     }
 
     conn.query(sql1, [data, req.body.articleId], (err, result) => {

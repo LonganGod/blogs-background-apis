@@ -69,3 +69,4 @@ app.use(require('./router/router_public'));
 app.use(require('./router/router_article'));
 app.use(require('./router/router_labels'));
 app.use(require('./router/router_role'));
+app.use(require('./router/router_frontDeskNav'));

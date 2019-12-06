@@ -72,8 +72,7 @@ router_backendNav
       navJumpPage: req.body.navUrl,
       navPId: parseInt(req.body.parentNavName),
       navIndex: parseInt(req.body.navPosition),
-      navStatus: req.body.navState ? 1 : 2,
-      createTime: new Date()
+      navStatus: req.body.navState ? 1 : 2
     }
     conn.query(sql, [data, parseInt(req.body.navId)], (err, result) => {
       if (err || result.affectedRows != 1) {
